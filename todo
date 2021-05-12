@@ -1,0 +1,14 @@
+[ general ]
+[ content ]
+	- active device modes
+[ bugs ]
+	- changed device location breaks app (after rework only removed devices)
+	- ram same location different products
+	- color not possible if random
+	- tons of random bugs with mode change (2 modes overlay)
+[ misc ]
+	- global env for backend setx var "value" in shell
+	- high speed socket 11872 (argb)
+	- fix pointer 
+	- fix sync modes compiled 
+	- hex or rgb-object
