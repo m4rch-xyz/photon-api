@@ -1,6 +1,6 @@
 {
 	"name": "photon-api",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
@@ -8,7 +8,7 @@
 		"dev": "nodemon .",
 		"comp-srv": "npm run comp-srv-win & npm run comp-srv-linux",
 		"comp-srv-win": "nexe index.js -t windows-x64-14.15.3 -o \"./out/service.exe\" -r \"./*\" -r \"./node-modules/**/*\" -r \"./sync_modes/*\"",
-		"comp-srv-linux": "nexe index.js -t linux-x64-14.15.2 -o \"./out/service.exe\" -r \"./*\" -r \"./node-modules/**/*\" -r \"./sync_modes/*\""
+		"comp-srv-linux": "nexe index.js -t linux-x64-14.15.2 -o \"./out/service\" -r \"./*\" -r \"./node-modules/**/*\" -r \"./sync_modes/*\""
 	},
 	"contributors": [
 		{
