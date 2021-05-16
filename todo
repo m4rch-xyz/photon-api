@@ -1,4 +1,5 @@
 [ general ]
+	- make sync modes independent
 [ content ]
 	- active device modes
 [ bugs ]
@@ -10,5 +11,4 @@
 	- global env for backend setx var "value" in shell
 	- high speed socket 11872 (argb)
 	- fix pointer 
-	- fix sync modes compiled 
 	- hex or rgb-object

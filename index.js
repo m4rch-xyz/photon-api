@@ -83,7 +83,7 @@ async function start () {
 	}
 
 
-	let syncModes = JSON.parse(JSON.stringify(last.syncZones)) || {} // stupid solution to unlink vars 
+	let syncModes = JSON.parse(JSON.stringify(last.syncZones || "{}"))  // stupid solution to unlink vars 
 
 	let directDevices = await getDirectDevices(client)
 
