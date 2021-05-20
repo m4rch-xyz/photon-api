@@ -9,7 +9,7 @@ module.exports = function ( app, client, syncModes ) {
 		if (!args.zoneName) return res.send({ ok: false, message: "didn't  receive a zone name"})
 
 		let last
-		try { last = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/last.json`)) } catch { last = {} }
+		try { last = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/last.json`)) } catch { last = {} }
 
 		if (args.modeName) {
 			syncModes[args.zoneName].modeName = args.modeName
@@ -66,7 +66,7 @@ module.exports = function ( app, client, syncModes ) {
 			})
 		}
 
-		fs.writeFileSync(`${process.env.ProgramData}/photon/data/last.json`, JSON.stringify(last, null, "\t"))
+		fs.writeFileSync(`${process.env.DATAFOLDER}/data/last.json`, JSON.stringify(last, null, "\t"))
 
 		res.send({ ok: true })
 	})
@@ -75,7 +75,7 @@ module.exports = function ( app, client, syncModes ) {
 		if (syncModes[args.zoneName]) return res.send({ ok: false, message: "a zone with this name already exists"})
 
 		let last
-		try { last = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/last.json`)) } catch { last = {} }
+		try { last = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/last.json`)) } catch { last = {} }
 
 		syncModes[args.zoneName] = {}
 
@@ -116,7 +116,7 @@ module.exports = function ( app, client, syncModes ) {
 
 		})
 
-		fs.writeFileSync(`${process.env.ProgramData}/photon/data/last.json`, JSON.stringify(last, null, "\t"))
+		fs.writeFileSync(`${process.env.DATAFOLDER}/data/last.json`, JSON.stringify(last, null, "\t"))
 
 		res.send({ ok: true })
 	})
@@ -127,9 +127,9 @@ module.exports = function ( app, client, syncModes ) {
 		if (syncModes[args.zoneName].mode && typeof syncModes[args.zoneName].mode.stop == "function") syncModes[args.zoneName].mode.stop()
 		delete syncModes[args.zoneName]
 
-		try { last = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/last.json`)) } catch (error) { console.log(error) }
+		try { last = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/last.json`)) } catch (error) { console.log(error) }
 		delete last.syncZones[args.zoneName]
-		fs.writeFileSync(`${process.env.ProgramData}/photon/data/last.json`, JSON.stringify(last, null, "\t"))
+		fs.writeFileSync(`${process.env.DATAFOLDER}/data/last.json`, JSON.stringify(last, null, "\t"))
 
 		res.send({ ok: true })
 	})
@@ -142,7 +142,7 @@ module.exports = function ( app, client, syncModes ) {
 			let device = devices.find(el => el.deviceId == params.device)
 
 			let last
-			try { last = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/last.json`)) } catch { last = {} }
+			try { last = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/last.json`)) } catch { last = {} }
 
 			if (!Array.isArray(last.device)) last.device = []
 	
@@ -180,7 +180,7 @@ module.exports = function ( app, client, syncModes ) {
 				args.colors = false
 			}
 
-			fs.writeFileSync(`${process.env.ProgramData}/photon/data/last.json`, JSON.stringify(last, null, "\t"))
+			fs.writeFileSync(`${process.env.DATAFOLDER}/data/last.json`, JSON.stringify(last, null, "\t"))
 
 			let colorhelper 
 			if (args.colors) {
@@ -241,7 +241,7 @@ module.exports = function ( app, client, syncModes ) {
 
 	app.get("/settings/", ( req, res ) => {
 		let settings
-		try { settings = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/settings.json`)) } catch { last = {} }
+		try { settings = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/settings.json`)) } catch { last = {} }
 
 		res.send({
 			settings
@@ -249,13 +249,13 @@ module.exports = function ( app, client, syncModes ) {
 	})
 
 	app.get("/profiles/", ( req, res ) => {
-		if (!fs.existsSync(`${process.env.ProgramData}/photon/profiles/`) || !fs.lstatSync(`${process.env.ProgramData}/photon/profiles/`).isDirectory()) {
-			fs.mkdirSync(`${process.env.ProgramData}/photon/profiles/`, { recursive: true })
+		if (!fs.existsSync(`${process.env.DATAFOLDER}/profiles/`) || !fs.lstatSync(`${process.env.DATAFOLDER}/profiles/`).isDirectory()) {
+			fs.mkdirSync(`${process.env.DATAFOLDER}/profiles/`, { recursive: true })
 			res.send([])
 			return
 		}
 
-		let profiles = fs.readdirSync(`${process.env.ProgramData}/photon/profiles/`).filter(( file ) => file.endsWith(".json")).map(( file ) => file.slice(0, -5))
+		let profiles = fs.readdirSync(`${process.env.DATAFOLDER}/profiles/`).filter(( file ) => file.endsWith(".json")).map(( file ) => file.slice(0, -5))
 
 		res.send(profiles.sort())
 	})
@@ -264,8 +264,8 @@ module.exports = function ( app, client, syncModes ) {
 		try {
 			stopAll()
 			let profile = {}
-			try { profile = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/profiles/${args.name}.json`)) } catch (error) { console.log(error) }
-			fs.writeFileSync(`${process.env.ProgramData}/photon/data/last.json`, JSON.stringify(profile, null, "\t"))
+			try { profile = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/profiles/${args.name}.json`)) } catch (error) { console.log(error) }
+			fs.writeFileSync(`${process.env.DATAFOLDER}/data/last.json`, JSON.stringify(profile, null, "\t"))
 
 			syncModes = profile.syncZones
 
@@ -293,8 +293,8 @@ module.exports = function ( app, client, syncModes ) {
 	app.post("/profiles/save/", ({ body: args }, res ) => {
 		try {
 			let profile
-			try { profile = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/last.json`)) } catch { profile = {} }
-			fs.writeFileSync(`${process.env.ProgramData}/photon/profiles/${args.name}.json`, JSON.stringify(profile, null, "\t"))
+			try { profile = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/last.json`)) } catch { profile = {} }
+			fs.writeFileSync(`${process.env.DATAFOLDER}/profiles/${args.name}.json`, JSON.stringify(profile, null, "\t"))
 			res.send({ ok: true })
 		} catch ( error ) {
 			res.send({ ok: false, message: error?.message || error || "error" }) 
@@ -303,16 +303,16 @@ module.exports = function ( app, client, syncModes ) {
 
 	app.post("/profiles/rename/", ({ body: args }, res ) => {
 		try {
-			if (!fs.existsSync(`${process.env.ProgramData}/photon/profiles/${args.oldName}.json`)) return res.send({ ok: false, message: "profile does not exist" })
-			if (fs.existsSync(`${process.env.ProgramData}/photon/profiles/${args.newName}.json`)) return res.send({ ok: false, message: "new name already exists" })
+			if (!fs.existsSync(`${process.env.DATAFOLDER}/profiles/${args.oldName}.json`)) return res.send({ ok: false, message: "profile does not exist" })
+			if (fs.existsSync(`${process.env.DATAFOLDER}/profiles/${args.newName}.json`)) return res.send({ ok: false, message: "new name already exists" })
 
-			fs.renameSync(`${process.env.ProgramData}/photon/profiles/${args.oldName}.json`, `${process.env.ProgramData}/photon/profiles/${args.newName}.json`)
+			fs.renameSync(`${process.env.DATAFOLDER}/profiles/${args.oldName}.json`, `${process.env.DATAFOLDER}/profiles/${args.newName}.json`)
 
 			let settings = {}
-			try { settings = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/settings.json`)) } catch {}
+			try { settings = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/settings.json`)) } catch {}
 			if (settings.startupProfile == args.oldName) {
 				settings.startupProfile = args.newName
-				fs.writeFileSync(`${process.env.ProgramData}/photon/data/settings.json`, JSON.stringify(settings, null, "\t"))
+				fs.writeFileSync(`${process.env.DATAFOLDER}/data/settings.json`, JSON.stringify(settings, null, "\t"))
 			}
 	
 			res.send({ ok: true })
@@ -323,9 +323,9 @@ module.exports = function ( app, client, syncModes ) {
 
 	app.post("/profiles/delete/", ({ body: args }, res) => {
 		try {
-			if (!fs.existsSync(`${process.env.ProgramData}/photon/profiles/${args.name}.json`)) return res.send({ ok: false, message: "profile does not exist" })
+			if (!fs.existsSync(`${process.env.DATAFOLDER}/profiles/${args.name}.json`)) return res.send({ ok: false, message: "profile does not exist" })
 
-			fs.unlinkSync(`${process.env.ProgramData}/photon/profiles/${args.name}.json`)
+			fs.unlinkSync(`${process.env.DATAFOLDER}/profiles/${args.name}.json`)
 			res.send({ ok: true })
 		} catch ( error ) {
 			res.send({ ok: false, message: error.message || error || "error" })
@@ -335,14 +335,14 @@ module.exports = function ( app, client, syncModes ) {
 	app.post("/settings/startup/profile/", ({ body: args }, res) => {
 		try {
 			let settings = {}
-			try { settings = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/settings.json`)) } catch {}
+			try { settings = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/settings.json`)) } catch {}
 			if ("name" in args && !args.name) {
 				settings.startupProfile = false
 			} else {
-				if (!fs.existsSync(`${process.env.ProgramData}/photon/profiles/${args.name}.json`)) return res.send({ ok: false, message: "profile does not exist" })
+				if (!fs.existsSync(`${process.env.DATAFOLDER}/profiles/${args.name}.json`)) return res.send({ ok: false, message: "profile does not exist" })
 				settings.startupProfile = args.name
 			}
-			fs.writeFileSync(`${process.env.ProgramData}/photon/data/settings.json`, JSON.stringify(settings, null, "\t"))
+			fs.writeFileSync(`${process.env.DATAFOLDER}/data/settings.json`, JSON.stringify(settings, null, "\t"))
 			res.send({ ok: true })
 		} catch ( error ) {
 			res.send({ ok: false, message: error.message || error || "error" })

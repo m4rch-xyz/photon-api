@@ -8,10 +8,25 @@ const routes = require(__dirname + "/routes.js")
 
 const client = new Client("rest-api")
 
+switch (process.platform) {
+	case "win32": {
+		process.env.DATAFOLDER = `${process.env.ProgramData}/photon`
+		break
+	}
+	case "linux": {
+		process.env.DATAFOLDER = `${process.env.HOME}/.photon`
+		break
+	}
+	case "darwin": {
+		process.env.DATAFOLDER = "TODO"
+		break
+	}
+}
+
 const app = express()
 let server = http.createServer(app)
 enableDestroy(server)
-server.listen(3000)
+server.listen(1872)
 
 async function connect () {
 	try {
@@ -43,20 +58,20 @@ app.use(express.urlencoded({ extended: true }))
 async function start () {
 	client.on("disconnect", connect)
 
-	if (!fs.existsSync(`${process.env.ProgramData}/photon/data/`)) fs.mkdirSync(`${process.env.ProgramData}/photon/data/`, { recursive: true })
-	if (!fs.existsSync(`${process.env.ProgramData}/photon/profiles/`)) fs.mkdirSync(`${process.env.ProgramData}/photon/profiles/`, { recursive: true })
+	if (!fs.existsSync(`${process.env.DATAFOLDER}/data/`)) fs.mkdirSync(`${process.env.DATAFOLDER}/photon/data/`, { recursive: true })
+	if (!fs.existsSync(`${process.env.DATAFOLDER}/profiles/`)) fs.mkdirSync(`${process.env.DATAFOLDER}/photon/profiles/`, { recursive: true })
 
 	let settings
-	try { settings = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/settings.json`)) } catch { settings = {} }
+	try { settings = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/settings.json`)) } catch { settings = {} }
 
 	let last
 	if (!settings.startupProfile) {
-		try { last = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/last.json`)) } catch { last = {} }
+		try { last = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/last.json`)) } catch { last = {} }
 	} else {
-		if (fs.existsSync(`${process.env.ProgramData}/photon/profiles/${settings.startupProfile}.json`)) {
-			last = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/profiles/${settings.startupProfile}.json`))
+		if (fs.existsSync(`${process.env.DATAFOLDER}/profiles/${settings.startupProfile}.json`)) {
+			last = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/profiles/${settings.startupProfile}.json`))
 		} else {
-			try { last = JSON.parse(fs.readFileSync(`${process.env.ProgramData}/photon/data/last.json`)) } catch { last = {} }
+			try { last = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/last.json`)) } catch { last = {} }
 		}
 	}
 
@@ -121,7 +136,7 @@ async function start () {
 	}
 
 
-	fs.writeFileSync(`${process.env.ProgramData}/photon/data/last.json`, JSON.stringify(last, null, "\t"))
+	fs.writeFileSync(`${process.env.DATAFOLDER}/data/last.json`, JSON.stringify(last, null, "\t"))
 
 	routes(app, client, syncModes)
 }
