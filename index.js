@@ -10,7 +10,7 @@ const client = new Client("rest-api")
 
 switch (process.platform) {
 	case "win32": {
-		process.env.DATAFOLDER = `${process.env.ProgramData}/photon`
+		process.env.DATAFOLDER = `${process.env.ProgramData}/Photon`
 		break
 	}
 	case "linux": {
@@ -58,8 +58,8 @@ app.use(express.urlencoded({ extended: true }))
 async function start () {
 	client.on("disconnect", connect)
 
-	if (!fs.existsSync(`${process.env.DATAFOLDER}/data/`)) fs.mkdirSync(`${process.env.DATAFOLDER}/photon/data/`, { recursive: true })
-	if (!fs.existsSync(`${process.env.DATAFOLDER}/profiles/`)) fs.mkdirSync(`${process.env.DATAFOLDER}/photon/profiles/`, { recursive: true })
+	if (!fs.existsSync(`${process.env.DATAFOLDER}/data/`)) fs.mkdirSync(`${process.env.DATAFOLDER}/data/`, { recursive: true })
+	if (!fs.existsSync(`${process.env.DATAFOLDER}/profiles/`)) fs.mkdirSync(`${process.env.DATAFOLDER}/profiles/`, { recursive: true })
 
 	let settings
 	try { settings = JSON.parse(fs.readFileSync(`${process.env.DATAFOLDER}/data/settings.json`)) } catch { settings = {} }

@@ -1,5 +1,7 @@
-( v 2021-05-12 )
+( v 2021-05-22 )
 [ general ]
 [ content ]
 [ bugs ]
 [ misc ]
+	- capitalised data folder on windows for consistensy
+	- fixed 2 wrong folder paths 
